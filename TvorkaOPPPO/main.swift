@@ -1,6 +1,6 @@
 import Foundation
 
-enum CalcError: Error {
+enum Exception: Error {
     case runtimeError(message: String)
     case ok(result: [Double])
 }
@@ -54,7 +54,7 @@ func solveNoException(a: Double, b: Double, c: Double) -> [Double]? {
 
 func solve(a: Double, b: Double, c: Double) throws -> [Double] {
     if isEqual(a, 0.0), isEqual(b, 0.0), isEqual(c, 0.0) {
-        throw(CalcError.runtimeError(message: "Invalid parametrs"))
+        throw(Exception.runtimeError(message: "Invalid parametrs"))
     }
     
     return solveCorrectEquation(a: a, b: b, c: c)
@@ -62,10 +62,10 @@ func solve(a: Double, b: Double, c: Double) throws -> [Double] {
 
 func solveFullException(a: Double, b: Double, c: Double) throws {
     if isEqual(a, 0.0), isEqual(b, 0.0), isEqual(c, 0.0) {
-        throw(CalcError.runtimeError(message: "Invalid parametrs"))
+        throw(Exception.runtimeError(message: "Invalid parametrs"))
     }
     
-    throw(CalcError.ok(result: solveCorrectEquation(a: a, b: b, c: c)))
+    throw(Exception.ok(result: solveCorrectEquation(a: a, b: b, c: c)))
 }
 
 func rootsSumNoException(a: Double, b: Double, c: Double) -> Double {
@@ -88,7 +88,7 @@ func rootsSum(a: Double, b: Double, c: Double) -> Double {
 func rootsSumFullException(a: Double, b: Double, c: Double) -> Double {
     do {
        try solveFullException(a: a, b: b, c: c)
-    } catch CalcError.ok(let result) {
+    } catch Exception.ok(let result) {
         return sumArray(result)
     } catch {
         return 0.0
