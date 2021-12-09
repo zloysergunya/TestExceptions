@@ -123,20 +123,17 @@ func run(n: UInt64, funcType: FuncType) {
 //    }
 
     // параллельная
-    DispatchQueue.global().sync {
-        let lock = NSLock()
-        
-        DispatchQueue.concurrentPerform(iterations: Int(n)) { i in
-            let a: Double = (Double(i).truncatingRemainder(dividingBy: 2000.0) - 1000.0) / 33.0
-            let b: Double = (Double(i).truncatingRemainder(dividingBy: 200.0) - 100.0) / 22.0
-            let c: Double = (Double(i).truncatingRemainder(dividingBy: 20.0) - 10.0) / 11.0
-            let localSum = callSolver(funcType: funcType, a: a, b: b, c: c)
+    let lock = NSLock()
+    DispatchQueue.concurrentPerform(iterations: Int(n)) { i in
+        let a: Double = (Double(i).truncatingRemainder(dividingBy: 2000.0) - 1000.0) / 33.0
+        let b: Double = (Double(i).truncatingRemainder(dividingBy: 200.0) - 100.0) / 22.0
+        let c: Double = (Double(i).truncatingRemainder(dividingBy: 20.0) - 10.0) / 11.0
+        let localSum = callSolver(funcType: funcType, a: a, b: b, c: c)
 
-            DispatchQueue.global().sync {
-                lock.lock()
-                sum += localSum
-                lock.unlock()
-            }
+        DispatchQueue.global().sync {
+            lock.lock()
+            sum += localSum
+            lock.unlock()
         }
     }
     
