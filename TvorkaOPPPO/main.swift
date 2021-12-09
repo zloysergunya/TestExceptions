@@ -111,25 +111,30 @@ func run(n: UInt64, funcType: FuncType) {
     
     var sum: Double = 0.0
     // последовательная
-    for i in 0..<n {
-        let a: Double = (Double(i).truncatingRemainder(dividingBy: 2000.0) - 1000.0) / 33.0
-        let b: Double = (Double(i).truncatingRemainder(dividingBy: 200.0) - 100.0) / 22.0
-        let c: Double = (Double(i).truncatingRemainder(dividingBy: 20.0) - 10.0) / 11.0
-        sum += callSolver(funcType: funcType, a: a, b: b, c: c)
-    }
-
-    // параллельная
-//    let lock = NSLock()
-//    DispatchQueue.concurrentPerform(iterations: Int(n)) { i in
+//    for i in 0..<n {
 //        let a: Double = (Double(i).truncatingRemainder(dividingBy: 2000.0) - 1000.0) / 33.0
 //        let b: Double = (Double(i).truncatingRemainder(dividingBy: 200.0) - 100.0) / 22.0
 //        let c: Double = (Double(i).truncatingRemainder(dividingBy: 20.0) - 10.0) / 11.0
-//        let localSum = callSolver(funcType: funcType, a: a, b: b, c: c)
-//
-//        lock.lock()
-//        sum += localSum
-//        lock.unlock()
+//        sum += callSolver(funcType: funcType, a: a, b: b, c: c)
 //    }
+
+    // параллельная
+    DispatchQueue.global().sync {
+        let lock = NSLock()
+        
+        DispatchQueue.concurrentPerform(iterations: Int(n)) { i in
+            let a: Double = (Double(i).truncatingRemainder(dividingBy: 2000.0) - 1000.0) / 33.0
+            let b: Double = (Double(i).truncatingRemainder(dividingBy: 200.0) - 100.0) / 22.0
+            let c: Double = (Double(i).truncatingRemainder(dividingBy: 20.0) - 10.0) / 11.0
+            let localSum = callSolver(funcType: funcType, a: a, b: b, c: c)
+
+            DispatchQueue.global().sync {
+                lock.lock()
+                sum += localSum
+                lock.unlock()
+            }
+        }
+    }
     
     let end = Date()
     
